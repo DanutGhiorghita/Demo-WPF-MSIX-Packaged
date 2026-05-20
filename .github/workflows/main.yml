@@ -14,45 +14,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log environment info
-        run: |
-          Write-Host "::notice::Runner OS: ${{ runner.os }}"
-          Write-Host "::notice::Workflow triggered by: ${{ github.event_name }}"
-          Write-Host "::notice::Branch: ${{ github.ref_name }}"
-          Write-Host "::notice::Commit SHA: ${{ github.sha }}"
-          Write-Host "::notice::Actor: ${{ github.actor }}"
-          dotnet --info
-        shell: pwsh
-
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Show repository structure
-        run: Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object FullName
-        shell: pwsh
-
       - name: Restore dependencies
-        run: |
-          Write-Host "::group::Restoring NuGet packages"
-          dotnet restore --verbosity normal
-          Write-Host "::endgroup::"
+        run: dotnet restore --verbosity minimal
         working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
       - name: Build
-        run: |
-          Write-Host "::group::Building project"
-          dotnet build --configuration Release --no-restore --verbosity normal
-          Write-Host "::endgroup::"
+        run: dotnet build --configuration Release --no-restore --verbosity minimal
         working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
-      - name: Log build output
-        if: always()
-        run: |
-          Write-Host "::notice::Build output location:"
-          Get-ChildItem -Recurse -Path "bin\Release" | Select-Object FullName, Length | Format-Table -AutoSize
-        working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
-        shell: pwsh
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileBrowser-Release-${{ github.run_number }}
+          path: "${{ github.workspace }}\\Demo WPF MSIX Packaged\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\"
+          if-no-files-found: error
+          retention-days: 30
