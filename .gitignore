@@ -366,3 +366,10 @@ FodyWeavers.xsd
 File Browser Sample App-SetupFiles/
 File Browser Sample App-Build_MSIX-SetupFiles/
 File Browser Sample App-cache/
+
+# Release archive
+Demo WPF MSIX Packaged.zip
+
+# Signing certificates
+*.pfx
+*.p12
