@@ -1,3 +1,16 @@
+# =============================================================================
+# CI/CD Pipeline: Build WPF Application, Create MSI Installer & Updater Config
+# =============================================================================
+# This workflow builds a .NET 8 WPF application, packages it into a signed MSI
+# installer using Advanced Installer, and generates an Updater configuration
+# file (updates.ini) for the Advanced Installer auto-update mechanism.
+#
+# Required GitHub Secrets:
+#   - SIGNING_CERTIFICATE   : Base64-encoded PFX certificate for code signing
+#   - CERTIFICATE_PASS      : Password for the PFX certificate
+#   - ADVINST_LICENSE_KEY   : Advanced Installer license key
+# =============================================================================
+
 name: Build
 
 on:
@@ -30,12 +43,27 @@ jobs:
         working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
+      # -----------------------------------------------------------------------
+      # Code Signing
+      # -----------------------------------------------------------------------
+      # The PFX certificate is stored as a Base64-encoded GitHub secret.
+      # We decode it to a temporary file on disk so Advanced Installer can use
+      # it during the MSI build. The file is cleaned up immediately after.
+      # -----------------------------------------------------------------------
       - name: Decode signing certificate from secrets
         run: |
           $certBytes = [Convert]::FromBase64String("${{ secrets.SIGNING_CERTIFICATE }}")
           [IO.File]::WriteAllBytes("${{ github.workspace }}\cert.pfx", $certBytes)
         shell: pwsh
 
+      # -----------------------------------------------------------------------
+      # MSI Installer Build (Advanced Installer)
+      # -----------------------------------------------------------------------
+      # Uses the Advanced Installer GitHub Action to:
+      #   1. Set the product version to 1.0.<run_number>
+      #   2. Sync the application binaries into the installer's APPDIR
+      #   3. Enable digital signing and configure the PFX certificate
+      # -----------------------------------------------------------------------
       - name: Build MSI installer (Advanced Installer)
         uses: caphyon/advinst-github-action@main
         with:
@@ -50,12 +78,21 @@ jobs:
             SetSig 
             SetDigitalCertificateFile -file "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"
 
+      # Remove the PFX from disk as soon as possible. Runs even if the build
+      # step fails, as a defensive measure for self-hosted runners.
       - name: Clean up signing certificate
         if: always()
         run: Remove-Item -Path "${{ github.workspace }}\cert.pfx" -Force -ErrorAction SilentlyContinue
         shell: pwsh
 
-      - name: Resolve MSI filename and path (useful when MSI is named dinamically e.g. has versioning in its name)
+      # -----------------------------------------------------------------------
+      # Resolve MSI Filename (useful when the MSI gets named dinamically e.g contains versioning in its name)
+      # -----------------------------------------------------------------------
+      # Discovers the built MSI in the output folder and exports its name,
+      # full path, and a URL-encoded version of the name (spaces -> %20) so
+      # the Updater configuration step can build a valid download URL.
+      # -----------------------------------------------------------------------
+      - name: Resolve MSI filename and path
         id: msi
         run: |
           $msiPath = Get-ChildItem -Path "${{ github.workspace }}\installer-output" -Filter "*.msi" | Select-Object -First 1
@@ -67,6 +104,13 @@ jobs:
           Write-Host "::notice::MSI found: $($msiPath.FullName)"
         shell: pwsh
 
+      # -----------------------------------------------------------------------
+      # Updater Configuration (Advanced Installer)
+      # -----------------------------------------------------------------------
+      # Generates an updates.ini file that the Advanced Installer Updater
+      # component reads at runtime to check for new versions. The URL points
+      # to your deployment server where the MSI will be hosted.
+      # -----------------------------------------------------------------------
       - name: Build Updater configuration (Advanced Installer)
         uses: caphyon/advinst-github-action@main
         with:
@@ -82,6 +126,15 @@ jobs:
             SetUpdateDescription Update -type Enhancement -description "Enhanced UX and performance improvements." -overwrite
             SetUpdateDescription Update -type BugFix -description "All known bugs have been fixed." -overwrite
 
+      # -----------------------------------------------------------------------
+      # Upload Artifacts
+      # -----------------------------------------------------------------------
+      # Three artifacts are uploaded for each build:
+      #   1. Application binaries — the raw build output
+      #   2. MSI installer       — the signed installer package
+      #   3. Updater config      — the updates.ini for the auto-update server
+      # All artifacts are retained for 30 days.
+      # -----------------------------------------------------------------------
       - name: Upload build artifacts (application binaries)
         uses: actions/upload-artifact@v4
         with:
