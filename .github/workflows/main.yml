@@ -45,9 +45,33 @@ jobs:
           aip-build-name: DefaultBuild
           aip-output-dir: "${{ github.workspace }}\\installer-output"
           aip-commands: |
-            NewSync APPDIR "${{ github.workspace }}\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\" -existingfiles delete
-            SetSig
-            SetDigitalCertificateFile -file "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"
+            SetSig -certificate "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"
+
+      - name: Resolve MSI name
+        id: msi
+        run: |
+          $msiPath = Get-ChildItem -Path "${{ github.workspace }}\installer-output" -Filter "*.msi" | Select-Object -First 1
+          if (-not $msiPath) { Write-Error "No MSI found in installer-output"; exit 1 }
+          echo "MSI_NAME=$($msiPath.Name)" >> $env:GITHUB_OUTPUT
+          echo "MSI_PATH=$($msiPath.FullName)" >> $env:GITHUB_OUTPUT
+          Write-Host "::notice::MSI found: $($msiPath.FullName)"
+        shell: pwsh
+
+      - name: Build updates config
+        uses: caphyon/advinst-github-action@main
+        with:
+          advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
+          advinst-enable-automation: 'true'
+          aip-path: "${{ github.workspace }}\\FileBrowser Update.aip"
+          aip-build-name: DefaultBuild
+          aip-output-dir: "${{ github.workspace }}\\updates-output"
+          aip-commands: |
+            DeleteUpdate Update
+            NewUpdate "${{ steps.msi.outputs.MSI_PATH }}" -name "Update" -display_name "${{ steps.msi.outputs.MSI_NAME }}" -url "https://deploy.azavista.com/installers/${{ steps.msi.outputs.MSI_NAME }}"
+            SetUpdateDescription Update -type Description -description "A new version is available with new features, enhanced UX and performance improvements." -overwrite
+            SetUpdateDescription Update -type Feature -description "New features are available in this version." -overwrite
+            SetUpdateDescription Update -type Enhancement -description "Enhanced UX and performance improvements." -overwrite
+            SetUpdateDescription Update -type BugFix -description "All known bugs have been fixed." -overwrite
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -62,5 +86,13 @@ jobs:
         with:
           name: FileBrowser-Installer-${{ github.run_number }}
           path: "${{ github.workspace }}\\installer-output\\"
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload updates config artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileBrowser-Updates-${{ github.run_number }}
+          path: "${{ github.workspace }}\\updates-output\\"
           if-no-files-found: error
           retention-days: 30
