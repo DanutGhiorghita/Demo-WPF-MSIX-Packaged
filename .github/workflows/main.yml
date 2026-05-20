@@ -133,7 +133,7 @@ jobs:
       #   1. Application binaries — the raw build output
       #   2. MSI installer       — the signed installer package
       #   3. Updater config      — the updates.ini for the auto-update server
-      # All artifacts are retained for 30 days.
+      # All artifacts are retained for 5 days.
       # -----------------------------------------------------------------------
       - name: Upload build artifacts (application binaries)
         uses: actions/upload-artifact@v4
@@ -141,7 +141,7 @@ jobs:
           name: FileBrowser-Release-${{ github.run_number }}
           path: "${{ github.workspace }}\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\"
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 5
 
       - name: Upload installer artifact (MSI)
         uses: actions/upload-artifact@v4
@@ -149,7 +149,7 @@ jobs:
           name: FileBrowser-Installer-${{ github.run_number }}
           path: "${{ github.workspace }}\\installer-output\\"
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 5
 
       - name: Upload Updater configuration artifact (updates.ini)
         uses: actions/upload-artifact@v4
@@ -157,4 +157,4 @@ jobs:
           name: FileBrowser-Updates-${{ github.run_number }}
           path: "${{ github.workspace }}\\FileBrowser Update-SetupFiles\\"
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 5
