@@ -517,6 +517,7 @@
     <ROW Component="mscorrc.dll" ComponentId="{51757B3F-E046-4817-BCDA-7164CB210A85}" Directory_="APPDIR" Attributes="256" KeyPath="mscorrc.dll"/>
     <ROW Component="msquic.dll" ComponentId="{5C34167B-204B-42D8-B10C-3C8140DC5ABD}" Directory_="APPDIR" Attributes="256" KeyPath="msquic.dll"/>
     <ROW Component="netstandard.dll" ComponentId="{1AAF534E-7FD2-4ACB-9F1B-4A2D08E0B31A}" Directory_="APPDIR" Attributes="0" KeyPath="netstandard.dll"/>
+    <ROW Component="updater.exe" ComponentId="{09BACF3C-F765-444F-8585-42654224F825}" Directory_="APPDIR" Attributes="0" KeyPath="updater.exe"/>
     <ROW Component="vcruntime140_cor3.dll" ComponentId="{69D55B74-FE61-442B-9B45-83F6402DCBA4}" Directory_="APPDIR" Attributes="256" KeyPath="vcruntime140_cor3.dll"/>
     <ROW Component="wpfgfx_cor3.dll" ComponentId="{6CC47C94-B9E7-4F76-8295-7A481A54350A}" Directory_="APPDIR" Attributes="256" KeyPath="wpfgfx_cor3.dll"/>
   </COMPONENT>
@@ -1041,6 +1042,7 @@
     <ROW File="FileBrowserSampleAppBadgeLogo.scale150.png" Component_="Store50x50Logo.scale100.png" FileName="FILEB~48.PNG|FileBrowserSampleAppBadgeLogo.scale-150.png" Attributes="0" SourcePath="Generated Assets\FileBrowserSampleAppBadgeLogo.scale-150.png" SelfReg="false"/>
     <ROW File="FileBrowserSampleAppBadgeLogo.scale200.png" Component_="Store50x50Logo.scale100.png" FileName="FILEB~49.PNG|FileBrowserSampleAppBadgeLogo.scale-200.png" Attributes="0" SourcePath="Generated Assets\FileBrowserSampleAppBadgeLogo.scale-200.png" SelfReg="false"/>
     <ROW File="FileBrowserSampleAppBadgeLogo.scale400.png" Component_="Store50x50Logo.scale100.png" FileName="FILEB~50.PNG|FileBrowserSampleAppBadgeLogo.scale-400.png" Attributes="0" SourcePath="Generated Assets\FileBrowserSampleAppBadgeLogo.scale-400.png" SelfReg="false"/>
+    <ROW File="updater.exe" Component_="updater.exe" FileName="updater.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="&lt;AI_STUBS&gt;updater.exe" SelfReg="false" DigSign="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.AppXCfgComponent">
     <ROW ID="Configuration" Order="1" ManifestFile="AppxManifest.xml" TargetOs="4" AutoUpdatesFrequency="0" AutoUpdatesOptions="0" ManifestBundleFile="AppxBundleManifest.xml"/>
@@ -1213,6 +1215,7 @@
     <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="AI_UPDATER_UNINSTALL" Type="82" Source="updater.exe" Target="/clean silent"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="Build_MSIX:"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
@@ -1687,6 +1690,19 @@
     <ROW Feature_="MainFeature" Component_="WindowsFormsIntegration.resources._102_dll"/>
     <ROW Feature_="MainFeature" Component_="DemoWPFMSIXPackaged.dll"/>
     <ROW Feature_="AiAppXAssets" Component_="Store50x50Logo.scale100.png"/>
+    <ROW Feature_="MainFeature" Component_="updater.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiIniFileComponent">
+    <ROW IniFile="AppDir" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="AppDir" Value="[APPDIR]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ApplicationName" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationName" Value="[ProductName]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ApplicationVersion" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationVersion" Value="[ProductVersion]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="CheckFrequency" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="CheckFrequency" Value="2" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="CompanyName" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="CompanyName" Value="[Manufacturer]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="DefaultCommandLine" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="DefaultCommandLine" Value="/checknow" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="DownloadsFolder" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="DownloadsFolder" Value="[CommonAppDataFolder][Manufacturer]\[ProductName]\updates\" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="Flags" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="Flags" Value="PerMachine|ShowConfigOptionsButton" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ID" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ID" Value="[UpgradeCode]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="URL" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="URL" Value="https://deploy.your-website.com/installers/updates.ini" Action="0" Component_="updater.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -1695,6 +1711,7 @@
     <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1399"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+    <ROW Action="AI_UPDATER_UNINSTALL" Condition="($updater.exe = 2) AND (?updater.exe = 3) AND NOT (UPGRADINGPRODUCTCODE)" Sequence="1551"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
@@ -1731,5 +1748,8 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.SynchronizedFolderComponent">
     <ROW Directory_="APPDIR" SourcePath="Demo WPF MSIX Packaged\bin\Release\net8.0-windows\win-x64" Feature="MainFeature" ExcludePattern="*~|#*#|%*%|._|CVS|.cvsignore|SCCS|vssver.scc|mssccprj.scc|vssver2.scc|.svn|.DS_Store" ExcludeFlags="6" FileAddOptions="4"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.UpdaterComponent">
+    <ROW Updater="updater.exe" URL="URL" SearchFreq="CheckFrequency" DownloadsFolder="DownloadsFolder" ID="ID" TargetDir="AppDir" AppName="ApplicationName" AppVersion="ApplicationVersion" CompanyName="CompanyName" DefCommandLine="DefaultCommandLine" Flags="Flags" IconIndex="0" UnistallCASeq="AI_UPDATER_UNINSTALL" Description="[|UpdaterName] [|ProductVersion]"/>
   </COMPONENT>
 </DOCUMENT>
