@@ -73,7 +73,7 @@ jobs:
             SetUpdateDescription Update -type Description -description "A new version is available with new features, enhanced UX and performance improvements." -overwrite
             SetUpdateDescription Update -type Feature -description "New features are available in this version." -overwrite
             SetUpdateDescription Update -type Enhancement -description "Enhanced UX and performance improvements." -overwrite
-            SetUpdateDescription Update -type BugFix -description "All known bugs have been fixed." -overwrite
+            SetUpdateDescription Update -type BugFix -description "All known bugs have been fixed." -overwrite-description "All known bugs have been fixed." -overwrite
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
