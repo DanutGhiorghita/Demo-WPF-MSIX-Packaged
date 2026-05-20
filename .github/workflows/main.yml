@@ -76,6 +76,7 @@ jobs:
           aip-commands: |
             DeleteUpdate Update
             NewUpdate "${{ steps.msi.outputs.MSI_PATH }}" -name "Update" -display_name "${{ steps.msi.outputs.MSI_NAME }}" -url "https://deploy.your-website.com/installers/${{ steps.msi.outputs.MSI_NAME_ENCODED }}"
+            UpdateInstaller Update -path "${{ steps.msi.outputs.MSI_PATH }}" -command_line "/qb" -no_cache
             SetUpdateDescription Update -type Description -description "A new version is available with new features, enhanced UX and performance improvements." -overwrite
             SetUpdateDescription Update -type Feature -description "New features are available in this version." -overwrite
             SetUpdateDescription Update -type Enhancement -description "Enhanced UX and performance improvements." -overwrite
