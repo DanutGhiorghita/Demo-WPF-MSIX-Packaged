@@ -5,6 +5,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,6 +30,15 @@ jobs:
         working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
+      - name: Build installer
+        uses: caphyon/advinst-github-action@main
+        with:
+          advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
+          advinst-enable-automation: 'true'
+          aip-path: "${{ github.workspace }}\\File Browser Sample App.aip"
+          aip-build-name: DefaultBuild
+          aip-output-dir: "${{ github.workspace }}\\installer-output"
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -36,3 +46,11 @@ jobs:
           path: "${{ github.workspace }}\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\"
           if-no-files-found: error
           retention-days: 30
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileBrowser-Installer-${{ github.run_number }}
+          path: "${{ github.workspace }}\\installer-output\\"
+          if-no-files-found: error
+          retention-days: 2
