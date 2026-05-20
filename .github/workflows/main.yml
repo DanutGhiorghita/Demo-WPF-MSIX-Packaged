@@ -38,7 +38,7 @@ jobs:
           Write-Host "::group::Restoring NuGet packages"
           dotnet restore --verbosity normal
           Write-Host "::endgroup::"
-        working-directory: ${{ github.workspace }}\Demo WPF MSIX Packaged\Demo WPF MSIX Packaged
+        working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
       - name: Build
@@ -46,7 +46,7 @@ jobs:
           Write-Host "::group::Building project"
           dotnet build --configuration Release --no-restore --verbosity normal
           Write-Host "::endgroup::"
-        working-directory: ${{ github.workspace }}\Demo WPF MSIX Packaged\Demo WPF MSIX Packaged
+        working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
       - name: Log build output
@@ -54,5 +54,5 @@ jobs:
         run: |
           Write-Host "::notice::Build output location:"
           Get-ChildItem -Recurse -Path "bin\Release" | Select-Object FullName, Length | Format-Table -AutoSize
-        working-directory: ${{ github.workspace }}\Demo WPF MSIX Packaged\Demo WPF MSIX Packaged
+        working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
