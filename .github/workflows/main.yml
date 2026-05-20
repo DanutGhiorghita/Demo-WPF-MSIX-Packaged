@@ -65,8 +65,6 @@ jobs:
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
           advinst-enable-automation: 'true'
           aip-path: "${{ github.workspace }}\\FileBrowser Update.aip"
-          aip-build-name: DefaultBuild
-          aip-output-dir: "${{ github.workspace }}\\updates-output"
           aip-commands: |
             DeleteUpdate Update
             NewUpdate "${{ steps.msi.outputs.MSI_PATH }}" -name "Update" -display_name "${{ steps.msi.outputs.MSI_NAME }}" -url "https://deploy.azavista.com/installers/${{ steps.msi.outputs.MSI_NAME }}"
@@ -95,6 +93,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: FileBrowser-Updates-${{ github.run_number }}
-          path: "${{ github.workspace }}\\updates-output\\"
+          path: "${{ github.workspace }}\\FileBrowser Update-SetupFiles\\"
           if-no-files-found: error
           retention-days: 30
