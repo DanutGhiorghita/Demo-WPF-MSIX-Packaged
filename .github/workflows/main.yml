@@ -45,6 +45,7 @@ jobs:
           aip-build-name: DefaultBuild
           aip-output-dir: "${{ github.workspace }}\\installer-output"
           aip-commands: |
+            SetVersion 1.0.${{ github.run_number }}
             NewSync APPDIR "${{ github.workspace }}\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\" -existingfiles delete
             SetSig 
             SetDigitalCertificateFile -file "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"
