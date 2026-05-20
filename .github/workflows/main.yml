@@ -45,7 +45,9 @@ jobs:
           aip-build-name: DefaultBuild
           aip-output-dir: "${{ github.workspace }}\\installer-output"
           aip-commands: |
-            SetSig -certificate "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"
+            NewSync APPDIR "${{ github.workspace }}\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\" -existingfiles delete
+            SetSig 
+            SetDigitalCertificateFile -file "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"-certificate "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"
 
       - name: Resolve MSI name
         id: msi
