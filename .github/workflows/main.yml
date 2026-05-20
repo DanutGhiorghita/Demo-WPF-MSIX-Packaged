@@ -33,6 +33,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: FileBrowser-Release-${{ github.run_number }}
-          path: "${{ github.workspace }}\\Demo WPF MSIX Packaged\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\"
+          path: "${{ github.workspace }}\\Demo WPF MSIX Packaged\\bin\\Release\\net8.0-windows\\win-x64\\"
           if-no-files-found: error
           retention-days: 30
