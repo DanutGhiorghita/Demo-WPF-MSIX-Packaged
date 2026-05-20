@@ -49,6 +49,11 @@ jobs:
             SetSig 
             SetDigitalCertificateFile -file "${{ github.workspace }}\cert.pfx" -password "${{ secrets.CERTIFICATE_PASS }}"
 
+      - name: Clean up signing certificate
+        if: always()
+        run: Remove-Item -Path "${{ github.workspace }}\cert.pfx" -Force -ErrorAction SilentlyContinue
+        shell: pwsh
+
       - name: Resolve MSI name
         id: msi
         run: |
