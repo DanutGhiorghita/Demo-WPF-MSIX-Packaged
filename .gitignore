@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Advanced Installer build output folders
+File Browser Sample App-SetupFiles/
+File Browser Sample App-Build_MSIX-SetupFiles/
+File Browser Sample App-cache/
