@@ -15,28 +15,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8
+      - name: Setup .NET 8 SDK
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
+      - name: Restore NuGet dependencies
         run: dotnet restore --verbosity minimal
         working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
-      - name: Build
+      - name: Build application (Release)
         run: dotnet build --configuration Release --no-restore --verbosity minimal
         working-directory: "${{ github.workspace }}\\Demo WPF MSIX Packaged"
         shell: pwsh
 
-      - name: Decode signing certificate
+      - name: Decode signing certificate from secrets
         run: |
           $certBytes = [Convert]::FromBase64String("${{ secrets.SIGNING_CERTIFICATE }}")
           [IO.File]::WriteAllBytes("${{ github.workspace }}\cert.pfx", $certBytes)
         shell: pwsh
 
-      - name: Build installer
+      - name: Build MSI installer (Advanced Installer)
         uses: caphyon/advinst-github-action@main
         with:
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
@@ -55,7 +55,7 @@ jobs:
         run: Remove-Item -Path "${{ github.workspace }}\cert.pfx" -Force -ErrorAction SilentlyContinue
         shell: pwsh
 
-      - name: Resolve MSI name
+      - name: Resolve MSI filename and path (useful when MSI is named dinamically e.g. has versioning in its name)
         id: msi
         run: |
           $msiPath = Get-ChildItem -Path "${{ github.workspace }}\installer-output" -Filter "*.msi" | Select-Object -First 1
@@ -67,7 +67,7 @@ jobs:
           Write-Host "::notice::MSI found: $($msiPath.FullName)"
         shell: pwsh
 
-      - name: Build updates config
+      - name: Build Updater configuration (Advanced Installer)
         uses: caphyon/advinst-github-action@main
         with:
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
@@ -82,7 +82,7 @@ jobs:
             SetUpdateDescription Update -type Enhancement -description "Enhanced UX and performance improvements." -overwrite
             SetUpdateDescription Update -type BugFix -description "All known bugs have been fixed." -overwrite
 
-      - name: Upload build artifacts
+      - name: Upload build artifacts (application binaries)
         uses: actions/upload-artifact@v4
         with:
           name: FileBrowser-Release-${{ github.run_number }}
@@ -90,7 +90,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload installer artifact
+      - name: Upload installer artifact (MSI)
         uses: actions/upload-artifact@v4
         with:
           name: FileBrowser-Installer-${{ github.run_number }}
@@ -98,7 +98,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Upload updates config artifact
+      - name: Upload Updater configuration artifact (updates.ini)
         uses: actions/upload-artifact@v4
         with:
           name: FileBrowser-Updates-${{ github.run_number }}
