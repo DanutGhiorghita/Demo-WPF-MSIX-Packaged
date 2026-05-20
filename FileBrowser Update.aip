@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DOCUMENT Type="Advanced Installer" CreateVersion="23.7" version="23.7" Modules="update" RootPath="." Language="en" Id="{79D1383A-B3FB-43DE-8B0D-BE681B6E6249}">
+  <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
+    <ROW Path="&lt;AI_DICTS&gt;aiu-ue.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;aiu-ue_en.ail"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.UpdaterEditorComponent">
+    <ROW Section="Update" Key="Name" Value="File Browser Sample App"/>
+    <ROW Section="Update" Key="ProductVersion" Value="1.0.0" ValueLocId="-"/>
+    <ROW Section="Update" Key="URL" Value="http://www.example.com/downloads/File Browser Sample App.msi" ValueLocId="-"/>
+    <ROW Section="Update" Key="Size" Value="File Browser Sample App-SetupFiles\File Browser Sample App.msi" ValueLocId="-"/>
+    <ROW Section="Update" Key="SHA256" Value="File Browser Sample App-SetupFiles\File Browser Sample App.msi" ValueLocId="-"/>
+    <ROW Section="Update" Key="MD5" Value="File Browser Sample App-SetupFiles\File Browser Sample App.msi" ValueLocId="-"/>
+    <ROW Section="Update" Key="ServerFileName" Value="File Browser Sample App.msi" ValueLocId="-"/>
+    <ROW Section="Update" Key="RegistryKey" Value="HKUD\Software\Caphyon\File Browser Sample App\Version" ValueLocId="-"/>
+    <ROW Section="Update" Key="Version" Value="1.0.0" ValueLocId="-"/>
+    <ATTRIBUTE name="OutputFileName" value="updates.ini"/>
+  </COMPONENT>
+</DOCUMENT>

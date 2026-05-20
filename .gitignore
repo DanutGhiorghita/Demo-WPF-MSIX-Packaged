@@ -373,3 +373,4 @@ Demo WPF MSIX Packaged.zip
 # Signing certificates
 *.pfx
 *.p12
+/FileBrowser Update-SetupFiles
