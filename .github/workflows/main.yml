@@ -14,13 +14,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Log environment info
+        run: |
+          Write-Host "::notice::Runner OS: ${{ runner.os }}"
+          Write-Host "::notice::Workflow triggered by: ${{ github.event_name }}"
+          Write-Host "::notice::Branch: ${{ github.ref_name }}"
+          Write-Host "::notice::Commit SHA: ${{ github.sha }}"
+          Write-Host "::notice::Actor: ${{ github.actor }}"
+          dotnet --info
+        shell: pwsh
+
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      - name: Show repository structure
+        run: Get-ChildItem -Recurse -Filter "*.csproj" | Select-Object FullName
+        shell: pwsh
+
       - name: Restore dependencies
-        run: dotnet restore "Demo WPF MSIX Packaged/Demo WPF MSIX Packaged/Demo WPF MSIX Packaged.csproj"
+        run: |
+          Write-Host "::group::Restoring NuGet packages"
+          dotnet restore --verbosity normal
+          Write-Host "::endgroup::"
+        working-directory: ${{ github.workspace }}\Demo WPF MSIX Packaged\Demo WPF MSIX Packaged
+        shell: pwsh
 
       - name: Build
-        run: dotnet build "Demo WPF MSIX Packaged/Demo WPF MSIX Packaged/Demo WPF MSIX Packaged.csproj" --configuration Release --no-restore
+        run: |
+          Write-Host "::group::Building project"
+          dotnet build --configuration Release --no-restore --verbosity normal
+          Write-Host "::endgroup::"
+        working-directory: ${{ github.workspace }}\Demo WPF MSIX Packaged\Demo WPF MSIX Packaged
+        shell: pwsh
+
+      - name: Log build output
+        if: always()
+        run: |
+          Write-Host "::notice::Build output location:"
+          Get-ChildItem -Recurse -Path "bin\Release" | Select-Object FullName, Length | Format-Table -AutoSize
+        working-directory: ${{ github.workspace }}\Demo WPF MSIX Packaged\Demo WPF MSIX Packaged
+        shell: pwsh
