@@ -146,7 +146,7 @@ jobs:
           $applicationExecutable = "[APPDIR]Demo WPF MSIX Packaged.exe"
           
           $updateName = "Update"
-          $updateDownloadUrl = "http://myserver/updates/FileBrowser Update COM.aip"
+          $updateDownloadUrl = "https://deploy.your-website.com/installers/${{ steps.msi.outputs.MSI_NAME_ENCODED }}"
           $installerCommandLine = "/qb"
           
           # Validate input MSI
