@@ -125,8 +125,7 @@ jobs:
             SetUpdateDescription Update -type Feature -description "New features are available in this version." -overwrite
             SetUpdateDescription Update -type Enhancement -description "Enhanced UX and performance improvements." -overwrite
             SetUpdateDescription Update -type BugFix -description "All known bugs have been fixed." -overwrite
-
-            # Auto-close app & restart after installation
+            
             UpdateAddAutoClose Update -app_path "[APPDIR]Demo WPF MSIX Packaged.exe" -always_restart
 
 
