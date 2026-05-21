@@ -146,7 +146,7 @@ jobs:
             $project = $advinst.CreateProject($advinst.ProjectTypes.Update)
             
             # Create the update entry directly — no need to remove anything on a new project
-            $updateVar = $project.NewUpdate("Update", "C:\Users\Danut\source\repos\Demo WPF MSIX Packaged\File Browser Sample App-SetupFiles\File Browser Sample App.msi")
+            $updateVar = $project.NewUpdate("Update", "${{ steps.msi.outputs.MSI_PATH }}")
             
             # Check what we got back
             $updateVar.Properties.MainUrl="http://myserver/updates/"
