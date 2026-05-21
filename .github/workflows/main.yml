@@ -138,7 +138,7 @@ jobs:
         uses: caphyon/advinst-github-action@main
         with:
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
-        # advinst-enable-automation: 'true'
+          advinst-enable-automation: 'true'
           shell: pwsh
           run: |
             $advinst = New-Object -ComObject "AdvancedInstaller"
