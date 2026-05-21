@@ -137,23 +137,52 @@ jobs:
       - name: Build Updater configuration using PowerShell COM (Advanced Installer)             
         shell: pwsh
         run: |
-          $advinst = New-Object -ComObject "AdvancedInstaller"
-
-          $project = $advinst.CreateProject($advinst.ProjectTypes.Update)
+          # --------------------------------------------------------------------------------------------------
+          # Create a new Advanced Installer Updates Configuration project
+          # --------------------------------------------------------------------------------------------------
           
-          # Create the update entry directly — no need to remove anything on a new project
-          $updateVar = $project.NewUpdate("Update", "${{ steps.msi.outputs.MSI_PATH }}")
+          $msiPackagePath = "${{ steps.msi.outputs.MSI_PATH }}"
+          $outputProjectPath = "${{ github.workspace }}\\FileBrowser Update COM.aip"
+          $applicationExecutable = "[APPDIR]Demo WPF MSIX Packaged.exe"
           
-          # Check what we got back
-          $updateVar.Properties.MainUrl="http://myserver/updates/"
-          $updateVar.Installer.CommandLine = "/qb"
+          $updateName = "Update"
+          $updateDownloadUrl = "http://myserver/updates/FileBrowser Update COM.aip"
+          $installerCommandLine = "/qb"
           
-          $updateVar.ReleaseNotes.Features = "New features in this update"
-          $updateVar.ReleaseNotes.Enhancements = "New enhancements in this update"
-          $updateVar.ReleaseNotes.BugsFixed = "All known bugs fixed in this update"
-          $project.SaveAs("${{ github.workspace }}\\FileBrowser Update COM.aip")
+          # Validate input MSI
+          if (-not (Test-Path $msiPackagePath)) {
+              throw "The MSI package was not found: $msiPackagePath"
+          }
           
-          $project.Build();
+          # Create Advanced Installer COM object
+          $advancedInstaller = New-Object -ComObject "AdvancedInstaller"
+          
+          # Create a new Updates Configuration project
+          $updateProject = $advancedInstaller.CreateProject($advancedInstaller.ProjectTypes.Update)
+          
+          # Create update entry
+          $updateEntry = $updateProject.NewUpdate($updateName, $msiPackagePath)
+          
+          # Configure properties (corresponds to Properties tab in the Updates Config Project UI)
+          $updateEntry.Properties.MainUrl = $updateDownloadUrl
+          $updateEntry.Installer.CommandLine = $installerCommandLine
+          $updateEntry.Installer.DeleteUpdatePackageAfterInstall = $true
+          
+          # Configure release notes (corresponds to Release Notes tab in the Updates Config Project UI)
+          $updateEntry.ReleaseNotes.Features = "New features are available in this version."
+          $updateEntry.ReleaseNotes.Enhancements = "UX and performance improvements are included in this version."
+          $updateEntry.ReleaseNotes.BugsFixed = "All known bugs have been fixed in this update."
+          
+          # Configure application restart behavior (corresponds to Auto Close Application tab in the Updates Config Project UI)
+          $autoCloseApplication = $updateEntry.NewAutoCloseApplication($applicationExecutable)
+          $autoCloseApplication.RestartAlways = $true
+          
+          # Set the output file name for the generated .ini file (corresponds to the File name field in the Build tab of the Updates Config Project UI)
+          $updateProject.OutputFileName = "FileBrowserUpdateCOM.ini"
+          
+          # Save and build the Updates Configuration project
+          $updateProject.SaveAs($outputProjectPath)
+          $updateProject.Build()
             
 
       # -----------------------------------------------------------------------
