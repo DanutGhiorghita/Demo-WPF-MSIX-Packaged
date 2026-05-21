@@ -142,7 +142,7 @@ jobs:
           # --------------------------------------------------------------------------------------------------
           
           $msiPackagePath = "${{ steps.msi.outputs.MSI_PATH }}"
-          $outputProjectPath = "${{ github.workspace }}\\FileBrowser Update COM-SetupFiles"
+          $outputProjectPath = "${{ github.workspace }}\\FileBrowser Update COM.aip"
           $applicationExecutable = "[APPDIR]Demo WPF MSIX Packaged.exe"
           
           $updateName = "Update"
