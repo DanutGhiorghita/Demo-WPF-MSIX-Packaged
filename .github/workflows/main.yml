@@ -111,7 +111,7 @@ jobs:
       # component reads at runtime to check for new versions. The URL points
       # to your deployment server where the MSI will be hosted.
       # -----------------------------------------------------------------------
-      - name: Build Updater configuration (Advanced Installer)
+      - name: Build Updater configuration using CLI (Advanced Installer)
         uses: caphyon/advinst-github-action@main
         with:
           advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
@@ -182,7 +182,7 @@ jobs:
           if-no-files-found: error
           retention-days: 5
 
-      - name: Upload Updater configuration artifact (updates.ini)
+      - name: Upload Updater configuration artifact CLI (updates.ini)
         uses: actions/upload-artifact@v4
         with:
           name: FileBrowser-Updates-${{ github.run_number }}
@@ -193,7 +193,7 @@ jobs:
       - name: Upload Updater configuration artifact COM (updates.ini)
         uses: actions/upload-artifact@v4
         with:
-          name: FileBrowser-Updates-${{ github.run_number }}
+          name: FileBrowser-Updates-COM-${{ github.run_number }}
           path: "${{ github.workspace }}\\FileBrowser Update COM-SetupFiles\\"
           if-no-files-found: error
           retention-days: 5
