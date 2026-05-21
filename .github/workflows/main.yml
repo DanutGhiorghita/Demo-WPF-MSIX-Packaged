@@ -105,7 +105,7 @@ jobs:
         shell: pwsh
 
       # -----------------------------------------------------------------------
-      # Updater Configuration (Advanced Installer)
+      # Updater Configuration (Advanced Installer) using CLI
       # -----------------------------------------------------------------------
       # Generates an updates.ini file that the Advanced Installer Updater
       # component reads at runtime to check for new versions. The URL points
@@ -126,13 +126,48 @@ jobs:
             SetUpdateDescription Update -type Enhancement -description "Enhanced UX and performance improvements." -overwrite
             SetUpdateDescription Update -type BugFix -description "All known bugs have been fixed." -overwrite
 
+
+      # -----------------------------------------------------------------------
+      # Updater Configuration (Advanced Installer) using PowerShell COM
+      # -----------------------------------------------------------------------
+      # Generates an updates.ini file that the Advanced Installer Updater
+      # component reads at runtime to check for new versions. The URL points
+      # to your deployment server where the MSI will be hosted.
+      # -----------------------------------------------------------------------
+      - name: Build Updater configuration (Advanced Installer)
+        uses: caphyon/advinst-github-action@main
+        with:
+          advinst-license: ${{ secrets.ADVINST_LICENSE_KEY }}
+        # advinst-enable-automation: 'true'
+          shell: pwsh
+          run: |
+            $advinst = New-Object -ComObject "AdvancedInstaller"
+
+            $project = $advinst.CreateProject($advinst.ProjectTypes.Update)
+            
+            # Create the update entry directly — no need to remove anything on a new project
+            $updateVar = $project.NewUpdate("Update", "C:\Users\Danut\source\repos\Demo WPF MSIX Packaged\File Browser Sample App-SetupFiles\File Browser Sample App.msi")
+            
+            # Check what we got back
+            $updateVar.Properties.MainUrl="http://myserver/updates/"
+            $updateVar.Installer.CommandLine = "/qb"
+            
+            $updateVar.ReleaseNotes.Features = "New features in this update"
+            $updateVar.ReleaseNotes.Enhancements = "New enhancements in this update"
+            $updateVar.ReleaseNotes.BugsFixed = "All known bugs fixed in this update"
+            $project.SaveAs("${{ github.workspace }}\\FileBrowser Update COM.aip")
+            
+            $project.Build();
+            
+
       # -----------------------------------------------------------------------
       # Upload Artifacts
       # -----------------------------------------------------------------------
       # Three artifacts are uploaded for each build:
       #   1. Application binaries — the raw build output
       #   2. MSI installer       — the signed installer package
-      #   3. Updater config      — the updates.ini for the auto-update server
+      #   3. Updater config CLI   — the updates.ini for the auto-update server
+      #   3. Updater config COM   — the updates.ini for the auto-update server through PowerShell Automation
       # All artifacts are retained for 5 days.
       # -----------------------------------------------------------------------
       - name: Upload build artifacts (application binaries)
@@ -156,5 +191,13 @@ jobs:
         with:
           name: FileBrowser-Updates-${{ github.run_number }}
           path: "${{ github.workspace }}\\FileBrowser Update-SetupFiles\\"
+          if-no-files-found: error
+          retention-days: 5
+
+      - name: Upload Updater configuration artifact COM (updates.ini)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FileBrowser-Updates-${{ github.run_number }}
+          path: "${{ github.workspace }}\\FileBrowser Update COM-SetupFiles\\"
           if-no-files-found: error
           retention-days: 5
