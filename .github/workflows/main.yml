@@ -192,7 +192,7 @@ jobs:
       #   1. Application binaries — the raw build output
       #   2. MSI installer       — the signed installer package
       #   3. Updater config CLI   — the updates.ini for the auto-update server
-      #   3. Updater config COM   — the updates.ini for the auto-update server through PowerShell Automation
+      #   4. Updater config COM   — the updates.ini for the auto-update server through PowerShell Automation
       # All artifacts are retained for 5 days.
       # -----------------------------------------------------------------------
       - name: Upload build artifacts (application binaries)
